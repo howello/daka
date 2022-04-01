@@ -20,11 +20,11 @@ howe:
         msg: 节假日查询接口（官网：http://www.apihubs.cn/#/holiday）
     TimeRange:
         AM:
-            start: 08:00:00
-            end: 08:30:00
+            start: '08:00:00'
+            end: '08:30:00'
         PM:
-            start: 18:00:00
-            end: 18:30:00
+            start: '18:00:00'
+            end: '18:30:00'
     cmd:
         openScreenCmd: adb shell input keyevent 26
         openApp: adb shell am start cn.xjiangwei.RobotHelper/.MainActivity
@@ -36,6 +36,8 @@ howe:
         disCharge3Step: adb shell "su -c 'dumpsys battery set usb 0'"
         disCharge4Step: adb shell "su -c 'dumpsys battery set wireless 0'"
     serverJiang:
-        url: https://sctapi.ftqq.com/SCT34695TsXVQWLnEb0NqNFa13DcjlX4i.send
+        url: https://sctapi.ftqq.com/
+        SendKey: SCT34695TePBhKwDnKe64AWGhuxFD3Tje
+        SendKeyBak: SCT134649THcLCBderrA8XSBBX8NHaR1X6
         msg: Server酱推送消息接口（官网：https://sct.ftqq.com/）
-        channel: 9
+        channel: 66
