@@ -3,6 +3,7 @@ package com.howe.daka.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.howe.daka.dto.ServerJiangResponseDTO;
 import com.howe.daka.service.DakaMainService;
+import com.howe.daka.service.InteractiveCmdService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,8 +20,12 @@ public class DakaController {
     @Resource
     private DakaMainService dakaMainService;
 
-    @GetMapping("/daka")
+    @Resource
+    private InteractiveCmdService interactiveCmdService;
+
+    @GetMapping("/dakaSuccess")
     public String success() {
+        interactiveCmdService.sendOpenScreenCmd();
         ServerJiangResponseDTO serverJiangResponseDTO = dakaMainService.notifyDakaSuccess();
         return JSONObject.toJSONString(serverJiangResponseDTO);
     }

@@ -68,7 +68,7 @@ public class DakaMainServiceImpl implements DakaMainService {
             return;
         }
 
-        int delay = RandomUtil.randomInt(1, 20);
+        int delay = RandomUtil.randomInt(1, 3);
         ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
         service.schedule(() -> {
             System.out.println("预打卡");
@@ -97,7 +97,7 @@ public class DakaMainServiceImpl implements DakaMainService {
             if (response != null) {
                 Integer code = response.getInteger("code");
                 if (code == 0) {
-                    Integer integer = ((JSONObject) response.getJSONObject("data").getJSONArray("list").get(0)).getInteger("workday");
+                    Integer integer = response.getJSONObject("data").getJSONArray("list").getJSONObject(0).getInteger("workday");
                     boolean isWorkDay = integer == 1;
                     JSONObject json = new JSONObject();
                     json.put("date", now);
@@ -106,7 +106,7 @@ public class DakaMainServiceImpl implements DakaMainService {
                     return isWorkDay;
                 }
             }
-        } catch (RestClientException e) {
+        } catch (Exception e) {
             return !DateUtil.isWeekend(nowTime);
         }
         return false;
@@ -119,11 +119,15 @@ public class DakaMainServiceImpl implements DakaMainService {
      */
     @Override
     public boolean isInDakaRange(DateTime nowTime) {
-        boolean AMTime = nowTime.compareTo(DateUtil.parse(AMRangeStart, "HH:mm:ss")) > 0 &&
-                nowTime.compareTo(DateUtil.parse(AMRangeEnd, "HH:mm:ss")) < 0;
-        boolean PMTime = nowTime.compareTo(DateUtil.parse(PMRangeStart, "HH:mm:ss")) > 0 &&
-                nowTime.compareTo(DateUtil.parse(PMRangeEnd, "HH:mm:ss")) < 0;
+        boolean AMTime = nowTime.compareTo(getRange(AMRangeStart)) > 0 &&
+                nowTime.compareTo(getRange(AMRangeEnd)) < 0;
+        boolean PMTime = nowTime.compareTo(getRange(PMRangeStart)) > 0 &&
+                nowTime.compareTo(getRange(PMRangeEnd)) < 0;
         return AMTime || PMTime;
+    }
+
+    private DateTime getRange(String time) {
+        return DateUtil.parse(DateUtil.formatDate(DateTime.now()) + " " + time, "yyyy-MM-dd HH:mm:ss");
     }
 
     /**
@@ -135,7 +139,7 @@ public class DakaMainServiceImpl implements DakaMainService {
         json.put("time", DateUtil.format(DateTime.now(), "yyyy-MM-dd HH:mm:ss"));
         json.put("status", "success");
         json.put("msg", "打卡成功");
-       return serverJiangService.send("打卡成功", json.toJSONString());
+        return serverJiangService.send("打卡成功", json.toJSONString());
     }
 
     /**

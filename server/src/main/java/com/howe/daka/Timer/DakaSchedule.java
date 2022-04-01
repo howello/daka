@@ -41,7 +41,7 @@ public class DakaSchedule {
         autoChargeService.charge();
     }
 
-    @Scheduled(cron = "${howe.cron.discharge.value}")
+    @Scheduled(cron = "${howe.cron.disCharge.value}")
     public void disChargeScedule(){
         autoChargeService.discharge();
     }
