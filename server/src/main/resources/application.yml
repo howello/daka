@@ -3,3 +3,39 @@ server:
 spring:
     application:
         name: daka
+
+howe:
+    cron:
+        daka:
+            value: '0 1,31 * * * ? '
+            msg: 打卡定时cron
+        charge:
+            value: '0 0 0 1/2 * ?'
+            msg: 充电定时cron
+        disCharge:
+            value: '0 0 3 1/2 * ? '
+            msg: 放电定时cron
+    workdayApi:
+        url: https://api.apihubs.cn/holiday/get?field=workday&date=
+        msg: 节假日查询接口（官网：http://www.apihubs.cn/#/holiday）
+    TimeRange:
+        AM:
+            start: 08:00:00
+            end: 08:30:00
+        PM:
+            start: 18:00:00
+            end: 18:30:00
+    cmd:
+        openScreenCmd: adb shell input keyevent 26
+        openApp: adb shell am start cn.xjiangwei.RobotHelper/.MainActivity
+        shutApp: adb shell am force-stop cn.xjiangwei.RobotHelper
+        charge1Step: adb shell "su -c 'echo 0 > /sys/class/power_supply/battery/input_suspend'"
+        charge2Step: adb shell "su -c 'dumpsys battery reset'"
+        disCharge1Step: adb shell "su -c 'echo 1 > /sys/class/power_supply/battery/input_suspend'"
+        disCharge2Step: adb shell "su -c 'dumpsys battery set ac 0'"
+        disCharge3Step: adb shell "su -c 'dumpsys battery set usb 0'"
+        disCharge4Step: adb shell "su -c 'dumpsys battery set wireless 0'"
+    serverJiang:
+        url: https://sctapi.ftqq.com/SCT34695TsXVQWLnEb0NqNFa13DcjlX4i.send
+        msg: Server酱推送消息接口（官网：https://sct.ftqq.com/）
+        channel: 9
