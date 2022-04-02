@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <Button
+                android:id="@+id/start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="start"
+                android:text="开始" />
+
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="openLog"
+                android:text="打开日志" />
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="stop"
+                android:text="关闭所有" />
+    </LinearLayout>
+
+    <!--    <TextView-->
+    <!--            android:id="@+id/xposed_status"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Xposed状态：未加载" />-->
+
+    <!--    <TextView-->
+    <!--            android:id="@+id/accessibility_status"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Accessibility状态：未加载" />-->
+
+    <!--    <TextView-->
+    <!--            android:id="@+id/httpserver_status"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="HttpServer状态：未开启" />-->
+
+    <TextView
+            android:layout_width="match_parent"
+            android:id="@+id/tv_log"
+            android:text="sadfdasfdgffsdfs"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+</LinearLayout>
