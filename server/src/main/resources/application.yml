@@ -1,5 +1,5 @@
 server:
-    port: 12889
+    port: 12809
 spring:
     application:
         name: daka
@@ -35,6 +35,7 @@ howe:
         disCharge2Step: adb shell "su -c 'dumpsys battery set ac 0'"
         disCharge3Step: adb shell "su -c 'dumpsys battery set usb 0'"
         disCharge4Step: adb shell "su -c 'dumpsys battery set wireless 0'"
+        startDakaService: adb shell am startservice -n cn.xjiangwei.RobotHelper/.Service.DakaService
     serverJiang:
         url: https://sctapi.ftqq.com/
         SendKey: SCT34695TePBhKwDnKe64AWGhuxFD3Tje

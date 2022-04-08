@@ -43,6 +43,9 @@ public class InteractiveCmdServiceImpl implements InteractiveCmdService {
     @Value("${howe.cmd.disCharge4Step}")
     private String disCharge4Step;
 
+    @Value("${howe.cmd.startDakaService}")
+    private String startDakaService;
+
     /**
      * 打卡
      */
@@ -53,6 +56,8 @@ public class InteractiveCmdServiceImpl implements InteractiveCmdService {
             sendOpenScreenCmd();
             Thread.sleep(1000);
             openApp();
+            Thread.sleep(3 * 1000);
+            startDakaService();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -117,6 +122,18 @@ public class InteractiveCmdServiceImpl implements InteractiveCmdService {
             Runtime.getRuntime().exec(disCharge2Step);
             Runtime.getRuntime().exec(disCharge3Step);
             Runtime.getRuntime().exec(disCharge4Step);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 启动打卡服务
+     */
+    @Override
+    public void startDakaService() {
+        try {
+            Runtime.getRuntime().exec(startDakaService);
         } catch (IOException e) {
             e.printStackTrace();
         }

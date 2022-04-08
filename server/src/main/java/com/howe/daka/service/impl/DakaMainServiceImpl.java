@@ -68,7 +68,7 @@ public class DakaMainServiceImpl implements DakaMainService {
             return;
         }
 
-        int delay = RandomUtil.randomInt(1, 3);
+        int delay = RandomUtil.randomInt(1, 20);
         ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
         service.schedule(() -> {
             System.out.println("预打卡");

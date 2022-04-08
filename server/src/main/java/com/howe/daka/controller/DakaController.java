@@ -23,16 +23,21 @@ public class DakaController {
     @Resource
     private InteractiveCmdService interactiveCmdService;
 
+    @GetMapping("/test")
+    public String test() {
+        return "服务正常";
+    }
+
     @GetMapping("/dakaSuccess")
     public String success() {
-        interactiveCmdService.sendOpenScreenCmd();
         interactiveCmdService.shutApp();
+        interactiveCmdService.sendOpenScreenCmd();
         ServerJiangResponseDTO serverJiangResponseDTO = dakaMainService.notifyDakaSuccess();
         return JSONObject.toJSONString(serverJiangResponseDTO);
     }
 
     @GetMapping("testDaka")
-    public void testDaka(){
+    public void testDaka() {
         interactiveCmdService.doDaka();
     }
 }

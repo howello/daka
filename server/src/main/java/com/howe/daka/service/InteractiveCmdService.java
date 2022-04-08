@@ -38,4 +38,9 @@ public interface InteractiveCmdService {
      * 断电步骤
      */
     void disChargeStep();
+
+    /**
+     * 启动打卡服务
+     */
+    void startDakaService();
 }
