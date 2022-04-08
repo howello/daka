@@ -1,6 +1,10 @@
 package cn.xjiangwei.RobotHelper.GamePackage;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
@@ -10,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import cn.xjiangwei.RobotHelper.MainActivity;
 import cn.xjiangwei.RobotHelper.MainApplication;
@@ -25,6 +30,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static android.os.SystemClock.sleep;
 
@@ -82,12 +92,12 @@ public class Main {
 
         /*****************************  双指缩放操作  ************************************/
 
-
 //        Robot.pinchOpen(100);  // 目前仅在xposed模式中实现了该方法，distance值为0到100
 //        Robot.pinchClose(100);  // 目前仅在xposed模式中实现了该方法，
         MLog.i(TAG, "start: 开始运行");
         while (true) {
             if (doDaKa()) {
+                success();
                 break;
             } else {
                 MLog.i(TAG, "doDaKa: 等待时间过长，退出开始下一个");
@@ -97,11 +107,60 @@ public class Main {
         /***** 提示  *****/
         Toast.show("运行结束！");
         //声音提示
-        Toast.notice();
+//        Toast.notice();
 
     }
 
-    private boolean doDaKa() {
+    private void success(){
+        //发送请求
+        String url = MainApplication.successUrl;
+        //第一步获取okHttpClient对象
+        OkHttpClient client = new OkHttpClient.Builder()
+                .build();
+        //第二步构建Request对象
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+        //第三步构建Call对象
+        Call call = client.newCall(request);
+        //第四步:异步get请求
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("onFailure", e.getMessage());
+                Toast.show("请求失败！");
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result = response.body().string();
+                Log.i("result", result);
+                Toast.show("请求成功！");
+                //杀死当前app
+                SuUtil.kill(getAppName(MainApplication.getInstance()));
+            }
+        });
+
+    }
+
+    /**
+     * 获取应用程序名称
+     */
+    public synchronized String getAppName(Context context) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(
+                    context.getPackageName(), 0);
+            int labelRes = packageInfo.applicationInfo.labelRes;
+            return context.getResources().getString(labelRes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+        private boolean doDaKa() {
         int times = 0;
         //先把微信杀了重开
         MLog.i(TAG, "doDaKa: 杀掉微信进程");
@@ -270,6 +329,7 @@ public class Main {
         int rightX;
         int rightY;
         String whiteList;
+
     }
 
 }

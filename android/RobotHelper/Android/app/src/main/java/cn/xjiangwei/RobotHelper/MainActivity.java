@@ -1,48 +1,28 @@
 package cn.xjiangwei.RobotHelper;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
-import androidx.work.WorkInfo;
-import androidx.work.WorkManager;
-
-import android.os.Handler;
-import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
-
+import android.widget.EditText;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+import cn.xjiangwei.RobotHelper.Tools.*;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
-
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
 import java.io.File;
-
-import cn.xjiangwei.RobotHelper.Service.RunTime;
-import cn.xjiangwei.RobotHelper.Tools.MLog;
-import cn.xjiangwei.RobotHelper.Tools.Robot;
-import cn.xjiangwei.RobotHelper.Tools.ScreenCaptureUtilByMediaPro;
-import cn.xjiangwei.RobotHelper.Tools.SuUtil;
-import cn.xjiangwei.RobotHelper.Tools.TessactOcr;
-import cn.xjiangwei.RobotHelper.Tools.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -52,25 +32,9 @@ public class MainActivity extends AppCompatActivity {
 //    private int mResultCode;
 //    private Intent mResultData;
 //    private MediaProjection mMediaProjection;
-    private TextView tv_log;
     private Thread thread;
 
-    @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    Object obj = msg.obj;
-                    if (obj != null) {
-                        tv_log.append((String) obj);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
+    private EditText tv_url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
             MainApplication.sceenWidth = Math.max(dm.heightPixels, dm.widthPixels);
             MainApplication.dpi = dm.densityDpi;
         }
-        tv_log = findViewById(R.id.tv_log);
+        tv_url = findViewById(R.id.tv_url);
+        tv_url.setText(MainApplication.successUrl);
 
         ScreenCaptureUtilByMediaPro.mProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
         // init
@@ -136,32 +101,25 @@ public class MainActivity extends AppCompatActivity {
 
         // 启动屏幕监控
         ScreenCaptureUtilByMediaPro.init();
+
+    }
+
+    public void killAppProcess(View view) {
+        System.exit(0);
+    }
+
+    public void save(View view) {
+        MainApplication.successUrl = tv_url.getText().toString();
+        Log.i(TAG, "save: "+ MainApplication.successUrl);
     }
 
     public void start(View view) {
-        if (!TessactOcr.checkInit()) {
-            Toast.show("初始化中，Please Wait!");
-            return;
-        }
-        // 启动屏幕监控
-        try {
-            ScreenCaptureUtilByMediaPro.init();
-        } catch (Exception e) {
-        }
-//        Intent intent = new Intent(this, Controller.class);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            startForegroundService(intent);
-//        } else {
-//            startService(intent);
-//        }
-//        finish();
-
-        MainApplication.startOneTime();
+                MainApplication.startOneTime();
 
     }
 
     public void stop(View view) {
-        MainApplication.shutTimer();
+//        MainApplication.shutTimer();
         Toast.show("关闭全部！");
         MLog.i(TAG, "stop: 关闭全部！！！");
     }

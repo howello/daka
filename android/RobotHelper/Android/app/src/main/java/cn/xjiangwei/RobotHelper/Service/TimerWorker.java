@@ -41,7 +41,7 @@ public class TimerWorker extends Worker {
             //上午
             if (hour == 8 && minute <= 30) {
                 MLog.i(TAG, "doWork: 当前为上午，到达时间段，开始执行");
-                MainApplication.startOneTime();
+//                MainApplication.startOneTime();
                 MLog.i(TAG, "doWork: 执行结束");
             } else {
                 MLog.i(TAG, "doWork: 当前为上午，不在时间段内！当前时间为：" + sdf.format(calendar.getTime()));
@@ -49,7 +49,7 @@ public class TimerWorker extends Worker {
         } else {
             if (hour == 18 && minute >= 30) {
                 MLog.i(TAG, "doWork: 当前为下午，到达时间段，开始执行");
-                MainApplication.startOneTime();
+//                MainApplication.startOneTime();
                 MLog.i(TAG, "doWork: 执行结束");
             } else {
                 MLog.i(TAG, "doWork: 不在时间段内！当前时间为：" + sdf.format(calendar.getTime()));

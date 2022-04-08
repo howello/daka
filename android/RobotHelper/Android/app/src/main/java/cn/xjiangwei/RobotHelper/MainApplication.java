@@ -26,6 +26,7 @@ public class MainApplication extends Application {
     public static int dpi;
     private static MainApplication instance;
     public static String wxPackageName = "com.tencent.mm";
+    public static String successUrl = "http://192.168.101.23:12809/dakaSuccess";
 
 
     public static MainApplication getInstance() {
@@ -37,7 +38,7 @@ public class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        setTimer();
+//        setTimer();
         MLog.i(TAG, "onCreate: 启动成功！");
     }
 

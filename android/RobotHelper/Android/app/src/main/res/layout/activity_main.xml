@@ -17,17 +17,42 @@
                 android:text="开始" />
 
 
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="openLog"
-                android:text="打开日志" />
+<!--        <Button-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:onClick="openLog"-->
+<!--                android:text="打开日志" />-->
+
+<!--        <Button-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:onClick="stop"-->
+<!--                android:text="关闭所有" />-->
 
         <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="stop"
-                android:text="关闭所有" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="killAppProcess"
+            android:text="关闭App" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/tv_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:inputType="text"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="save"
+            android:text="保存"/>
     </LinearLayout>
 
     <!--    <TextView-->
@@ -48,10 +73,4 @@
     <!--            android:layout_height="wrap_content"-->
     <!--            android:text="HttpServer状态：未开启" />-->
 
-    <TextView
-            android:layout_width="match_parent"
-            android:id="@+id/tv_log"
-            android:text="sadfdasfdgffsdfs"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
 </LinearLayout>
