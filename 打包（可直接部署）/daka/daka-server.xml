@@ -1,0 +1,14 @@
+<service>
+  <id>DakaService</id>
+  <name>DakaService</name>
+  <description>这是打卡服务，启动之后使用：“http://ip:port/test”进行测试（默认：http://192.168.137.1:12809/test）</description>
+  <executable>java</executable>
+  <arguments>-jar .\server\daka.jar --spring.config.location=.\server\conf\application.yml</arguments>
+  <logmode>rotate</logmode>
+  <!-- 开机启动 -->
+  <startmode>Automatic</startmode>
+  <!-- 日志配置 -->
+  <logpath>%BASE%\logs</logpath>
+  <!--失败自动重启-->
+  <onfailure action="restart" delay="10 sec"/>
+</service>

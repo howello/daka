@@ -238,6 +238,8 @@ public class MainActivity extends AppCompatActivity {
         settingDTO.setPicName(picName);
         settingDTO.setOcrEntityMap(ocrEntityMap);
         MainApplication.setSettingDTO(settingDTO);
+
+        Toast.show("保存成功！！！");
     }
 
     public void start(View view) {
