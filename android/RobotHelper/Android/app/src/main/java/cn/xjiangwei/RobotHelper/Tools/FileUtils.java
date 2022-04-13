@@ -7,12 +7,15 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 /**
@@ -218,6 +221,58 @@ public class FileUtils {
             closeable.close();
         } catch (IOException ignored) {
 
+        }
+    }
+
+    //获取SD卡下的info.txt内容
+    public static String getSDCardInfo(File file){
+
+        if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
+            return null;
+
+        if(!file.exists())        //文件不存在的情况下
+        {
+            Log.v("sdcard", "file is Empty");
+            return "";
+        }
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+
+            while((line=br.readLine())!=null)        //获取每一行数据源
+            {
+                sb.append(line+"\r\n");
+            }
+
+            return sb.toString();
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+            return null;
+        }
+    }
+
+    //将content写入SD卡下的info.txt
+   public static boolean writeSDCardInfo(String content,File file){
+
+        if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
+            return false;
+
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(content.getBytes());
+            fos.flush();
+            fos.close();
+            return true;
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+            return false;
         }
     }
 

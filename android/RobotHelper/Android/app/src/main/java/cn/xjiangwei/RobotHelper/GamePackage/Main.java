@@ -10,12 +10,14 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import cn.xjiangwei.RobotHelper.DTO.SettingDTO;
 import cn.xjiangwei.RobotHelper.MainActivity;
 import cn.xjiangwei.RobotHelper.MainApplication;
 import cn.xjiangwei.RobotHelper.Tools.Image;
@@ -113,7 +115,7 @@ public class Main {
 
     private void success(){
         //发送请求
-        String url = MainApplication.successUrl;
+        String url = MainApplication.getSettingDTO().getSuccessUrl();
         //第一步获取okHttpClient对象
         OkHttpClient client = new OkHttpClient.Builder()
                 .build();
@@ -178,7 +180,7 @@ public class Main {
         MLog.i(TAG, "doDaKa: 开始等待15秒");
         sleep(15 * 1000);
         MLog.i(TAG, "doDaKa: 等待结束");
-        OcrEntity ocr = new OcrEntity(0, 200, 400, 400, "考勤上报");
+        SettingDTO.OcrEntity ocr = MainApplication.getSettingDTO().getOcrEntityMap().get(1);
         times = 0;
         while (!doOcrStep(ocr).contains("考勤上报")) {
             MLog.i(TAG, "doDaKa: 考勤上报文字识别中。。。Times：" + times);
@@ -198,7 +200,7 @@ public class Main {
         }
         times = 0;
 
-        OcrEntity ocrEntity = new OcrEntity(0, 1000, 1000, 1700, "获 取 有 效 考 勤 点 成 功");
+        SettingDTO.OcrEntity ocrEntity = MainApplication.getSettingDTO().getOcrEntityMap().get(2);
         while (!doOcrStep(ocrEntity).contains("获取有效考勤点成功")) {
             MLog.i(TAG, "doDaKa: 获取有效考勤点成功文字识别中。。。TImes:" + times);
             sleep(1000);
@@ -218,7 +220,7 @@ public class Main {
         MLog.i(TAG, "doDaKa: 等待10秒");
         sleep(10 * 1000);
         MLog.i(TAG, "doDaKa: 等待结束");
-        OcrEntity ocrSuccess = new OcrEntity(200, 600, 1000, 1100, "");
+        SettingDTO.OcrEntity ocrSuccess = MainApplication.getSettingDTO().getOcrEntityMap().get(3);
         while (true) {
             MLog.i(TAG, "doDaKa: 打卡结果文字识别中。。。Times:" + times);
             String ret = doOcrStep(ocrSuccess);
@@ -248,13 +250,19 @@ public class Main {
     }
 
     private Point getPointByPic(String fileName) {
-        InputStream is = null;
-        try {
-            is = MainApplication.getInstance().getAssets().open(fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/daka/pic/" + fileName;
+        Bitmap bitmap;
+        if (new File(path).exists()) {
+             bitmap = BitmapFactory.decodeFile(path);
+        }else{
+            InputStream is = null;
+            try {
+                is = MainApplication.getInstance().getAssets().open(fileName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            bitmap = BitmapFactory.decodeStream(is);
         }
-        Bitmap bitmap = BitmapFactory.decodeStream(is);
         //在当前屏幕中查找模板图片
         Point point = Image.matchTemplate(ScreenCaptureUtil.getScreenCap(), bitmap, 0.1);
         MLog.i(TAG, "getPointByPic: 屏幕中找到图片模板，位置坐标位：" + point.toString());
@@ -271,7 +279,8 @@ public class Main {
 
     private boolean doFirstStep() {
         //2. 找到打卡的快捷方式的点位
-        Point point = getPointByPic("daka.png");
+        String pic1 = MainApplication.getSettingDTO().getPicName().getPic1();
+        Point point = getPointByPic(pic1);
         MLog.i(TAG, "doFirstStep: 获取到快捷方式的坐标：" + point.toString());
         if (point.getX() == -1 || point.getY() == -1) {
             return false;
@@ -285,7 +294,8 @@ public class Main {
 
     private boolean doSencondStep() {
         //4. 找到考勤上报的点位
-        Point point2 = getPointByPic("daka2.png");
+        String pic2 = MainApplication.getSettingDTO().getPicName().getPic2();
+        Point point2 = getPointByPic(pic2);
         MLog.i(TAG, "doSencondStep: 获取到考勤上报的坐标：" + point2.toString());
         if (point2.getX() == -1 || point2.getY() == -1) {
             return false;
@@ -299,7 +309,8 @@ public class Main {
 
     private boolean doThirdStep() {
         //6.找到打卡按钮的点位
-        Point point3 = getPointByPic("daka3.png");
+        String pic3 = MainApplication.getSettingDTO().getPicName().getPic3();
+        Point point3 = getPointByPic(pic3);
         MLog.i(TAG, "doThirdStep: 获取到打卡位置坐标：" + point3.toString());
         if (point3.getX() == -1 || point3.getY() == -1) {
             return false;
@@ -312,24 +323,11 @@ public class Main {
         }
     }
 
-    private String doOcrStep(OcrEntity ocrEntity) {
+    private String doOcrStep(SettingDTO.OcrEntity ocrEntity) {
         MLog.i(TAG, "doOcrStep: 开始识别文字。实体类：" + ocrEntity.toString());
         String res = TessactOcr.img2string(ScreenCaptureUtil.getScreenCap(ocrEntity.getLeftX(), ocrEntity.getLeftY(), ocrEntity.getRightX(), ocrEntity.getRightY()), "chi_sim", ocrEntity.getWhiteList(), "").replaceAll(" ", "");
         MLog.i(TAG, "doOcrStep: 文字识别结果：" + res);
         return res;
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @ToString
-    class OcrEntity {
-        int leftX;
-        int leftY;
-        int rightX;
-        int rightY;
-        String whiteList;
-
     }
 
 }
