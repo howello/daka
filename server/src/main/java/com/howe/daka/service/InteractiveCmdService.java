@@ -1,6 +1,8 @@
 package com.howe.daka.service;
 
 
+import java.util.function.Consumer;
+
 /**
  * <p>@Author lu
  * <p>@Date 2022/3/31 16:11 星期四
@@ -43,4 +45,10 @@ public interface InteractiveCmdService {
      * 启动打卡服务
      */
     void startDakaService();
+
+    /**
+     * 切换wifi热点状态
+     * @param consumer
+     */
+    void toggleWifiStatus(Consumer<String> consumer);
 }

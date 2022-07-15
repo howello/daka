@@ -1,11 +1,16 @@
 package com.howe.daka.service.impl;
 
 import com.howe.daka.service.InteractiveCmdService;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.function.Consumer;
 
 /**
  * <p>@Author lu
@@ -45,6 +50,9 @@ public class InteractiveCmdServiceImpl implements InteractiveCmdService {
 
     @Value("${howe.cmd.startDakaService}")
     private String startDakaService;
+
+    @Value("${howe.cmd.toggleWifiStatus}")
+    private String toggleWifiStatus;
 
     /**
      * 打卡
@@ -137,5 +145,36 @@ public class InteractiveCmdServiceImpl implements InteractiveCmdService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 切换wifi热点状态
+     *
+     * @param consumer
+     */
+    @SneakyThrows
+    @Override
+    public void toggleWifiStatus(Consumer<String> consumer) {
+        excutePowerShellCmd(consumer,toggleWifiStatus);
+    }
+
+    /**
+     * 执行powershell命令，带返回
+     * @param consumer
+     * @param cmdLine
+     * @throws IOException
+     */
+    private void excutePowerShellCmd(Consumer<String> consumer, String cmdLine) throws IOException {
+        Process powerShellProcess = Runtime.getRuntime().exec(cmdLine);
+        powerShellProcess.getOutputStream().close();
+        String line;
+        BufferedReader stdout = new BufferedReader(new InputStreamReader(
+                powerShellProcess.getInputStream()));
+        while ((line = stdout.readLine()) != null) {
+            if (StringUtils.isNotBlank(line)) {
+                consumer.accept(line.trim());
+            }
+        }
+        stdout.close();
     }
 }

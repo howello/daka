@@ -11,13 +11,13 @@ import com.howe.daka.service.ServerJiangService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * <p>@Author lu
@@ -62,6 +62,9 @@ public class DakaMainServiceImpl implements DakaMainService {
         DateTime now = DateTime.now();
         if (!isWorkDay(now)) {
             return;
+        }
+        if (isRestartTime(now)) {
+            restartWifi();
         }
 
         if (!isInDakaRange(now)) {
@@ -128,6 +131,39 @@ public class DakaMainServiceImpl implements DakaMainService {
 
     private DateTime getRange(String time) {
         return DateUtil.parse(DateUtil.formatDate(DateTime.now()) + " " + time, "yyyy-MM-dd HH:mm:ss");
+    }
+
+    /**
+     * 重启wifi
+     */
+    private void restartWifi() {
+        AtomicBoolean status= new AtomicBoolean(false);
+        AtomicBoolean success = new AtomicBoolean(false);
+        interactiveCmdService.toggleWifiStatus(line->{
+            if ("ON".equalsIgnoreCase(line)) {
+                status.set(true);
+            } else if ("OFF".equalsIgnoreCase(line)) {
+                status.set(false);
+            }
+            if ("SUCCESS".equalsIgnoreCase(line)) {
+                success.set(true);
+            } else {
+                success.set(false);
+            }
+        });
+        if (success.get() && status.get()) {
+            restartWifi();
+        }
+    }
+
+   private boolean isRestartTime(DateTime nowTime){
+       DateTime AMRangeStartDate = getRange(AMRangeStart);
+       DateTime PMRangeStartDate = getRange(PMRangeStart);
+       boolean AMTime = nowTime.compareTo(DateUtil.offsetMinute(AMRangeStartDate, -30)) > 0 &&
+               nowTime.compareTo(AMRangeStartDate) < 0;
+       boolean PMTime = nowTime.compareTo(DateUtil.offsetMinute(PMRangeStartDate, -30)) > 0 &&
+               nowTime.compareTo(PMRangeStartDate) < 0;
+       return AMTime || PMTime;
     }
 
     /**
