@@ -54,6 +54,15 @@ public class InteractiveCmdServiceImpl implements InteractiveCmdService {
     @Value("${howe.cmd.toggleWifiStatus}")
     private String toggleWifiStatus;
 
+    @Value("${howe.cmd.startGnirehtetService}")
+    private String startGnirehtetService;
+
+    @Value("${howe.cmd.stopGnirehtetService}")
+    private String stopGnirehtetService;
+
+    @Value("${howe.cmd.queryGnirehtetService}")
+    private String queryGnirehtetService;
+
     /**
      * 打卡
      */
@@ -155,26 +164,49 @@ public class InteractiveCmdServiceImpl implements InteractiveCmdService {
     @SneakyThrows
     @Override
     public void toggleWifiStatus(Consumer<String> consumer) {
-        excutePowerShellCmd(consumer,toggleWifiStatus);
+        excuteCmdWithResult(consumer, toggleWifiStatus);
+    }
+
+    @SneakyThrows
+    @Override
+    public void startGnirehtetService() {
+        Runtime.getRuntime().exec(startGnirehtetService);
+    }
+
+    @SneakyThrows
+    @Override
+    public void stopGnirehtetService() {
+        Runtime.getRuntime().exec(stopGnirehtetService);
+
+    }
+
+    /**
+     * @param consumer
+     */
+    @SneakyThrows
+    @Override
+    public void queryGnirehtetService(Consumer<String> consumer) {
+        excuteCmdWithResult(consumer, queryGnirehtetService);
     }
 
     /**
      * 执行powershell命令，带返回
+     *
      * @param consumer
      * @param cmdLine
      * @throws IOException
      */
-    private void excutePowerShellCmd(Consumer<String> consumer, String cmdLine) throws IOException {
-        Process powerShellProcess = Runtime.getRuntime().exec(cmdLine);
-        powerShellProcess.getOutputStream().close();
+    private void excuteCmdWithResult(Consumer<String> consumer, String cmdLine) throws IOException {
+        Process process = Runtime.getRuntime().exec(cmdLine);
+        process.getOutputStream().close();
         String line;
-        BufferedReader stdout = new BufferedReader(new InputStreamReader(
-                powerShellProcess.getInputStream()));
-        while ((line = stdout.readLine()) != null) {
-            if (StringUtils.isNotBlank(line)) {
-                consumer.accept(line.trim());
+        try (BufferedReader stdout = new BufferedReader(new InputStreamReader(
+                process.getInputStream()))) {
+            while ((line = stdout.readLine()) != null) {
+                if (StringUtils.isNotBlank(line)) {
+                    consumer.accept(line.trim());
+                }
             }
         }
-        stdout.close();
     }
 }

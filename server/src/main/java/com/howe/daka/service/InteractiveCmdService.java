@@ -51,4 +51,10 @@ public interface InteractiveCmdService {
      * @param consumer
      */
     void toggleWifiStatus(Consumer<String> consumer);
+
+    void startGnirehtetService();
+
+    void stopGnirehtetService();
+
+    void queryGnirehtetService(Consumer<String> consumer);
 }

@@ -64,7 +64,9 @@ public class DakaMainServiceImpl implements DakaMainService {
             return;
         }
         if (isRestartTime(now)) {
-            restartWifi();
+            //restartWifi();
+            AtomicBoolean isRestarted = new AtomicBoolean(false);
+            restartGnirehtetService(isRestarted);
         }
 
         if (!isInDakaRange(now)) {
@@ -133,13 +135,35 @@ public class DakaMainServiceImpl implements DakaMainService {
         return DateUtil.parse(DateUtil.formatDate(DateTime.now()) + " " + time, "yyyy-MM-dd HH:mm:ss");
     }
 
+    private void restartGnirehtetService(AtomicBoolean isRestarted) {
+        if (isRestarted.get()) {
+            return;
+        }
+
+        interactiveCmdService.queryGnirehtetService(line -> {
+            if (line.contains("STATE") && line.contains("STOPPED")) {
+                interactiveCmdService.startGnirehtetService();
+                isRestarted.set(true);
+            } else if (line.contains("STATE") && line.contains("RUNNING")) {
+                interactiveCmdService.stopGnirehtetService();
+                isRestarted.set(false);
+            }
+        });
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        restartGnirehtetService(isRestarted);
+    }
+
     /**
      * 重启wifi
      */
     private void restartWifi() {
-        AtomicBoolean status= new AtomicBoolean(false);
+        AtomicBoolean status = new AtomicBoolean(false);
         AtomicBoolean success = new AtomicBoolean(false);
-        interactiveCmdService.toggleWifiStatus(line->{
+        interactiveCmdService.toggleWifiStatus(line -> {
             if ("ON".equalsIgnoreCase(line)) {
                 status.set(true);
             } else if ("OFF".equalsIgnoreCase(line)) {
@@ -156,14 +180,14 @@ public class DakaMainServiceImpl implements DakaMainService {
         }
     }
 
-   private boolean isRestartTime(DateTime nowTime){
-       DateTime AMRangeStartDate = getRange(AMRangeStart);
-       DateTime PMRangeStartDate = getRange(PMRangeStart);
-       boolean AMTime = nowTime.compareTo(DateUtil.offsetMinute(AMRangeStartDate, -30)) > 0 &&
-               nowTime.compareTo(AMRangeStartDate) < 0;
-       boolean PMTime = nowTime.compareTo(DateUtil.offsetMinute(PMRangeStartDate, -30)) > 0 &&
-               nowTime.compareTo(PMRangeStartDate) < 0;
-       return AMTime || PMTime;
+    private boolean isRestartTime(DateTime nowTime) {
+        DateTime AMRangeStartDate = getRange(AMRangeStart);
+        DateTime PMRangeStartDate = getRange(PMRangeStart);
+        boolean AMTime = nowTime.compareTo(DateUtil.offsetMinute(AMRangeStartDate, -30)) > 0 &&
+                nowTime.compareTo(AMRangeStartDate) < 0;
+        boolean PMTime = nowTime.compareTo(DateUtil.offsetMinute(PMRangeStartDate, -30)) > 0 &&
+                nowTime.compareTo(PMRangeStartDate) < 0;
+        return AMTime || PMTime;
     }
 
     /**
